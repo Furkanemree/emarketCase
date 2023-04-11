@@ -48,13 +48,10 @@ const Root = ({ }) => {
                         item.isFavorite = false
                     }
                 })
-                dispatch(BasketActions.setBasketState({
-                    count: basket.length
-                }));
-                dispatch(MarketActions.setMarketState({
-                    list: data
-                }));
-                onSuccess({});
+                let count = general.isNullOrEmpty(basket?.length) ? 0 : basket?.length
+
+                onSuccess({ data, count });
+
             },
             onError: (x: any) => {
                 console.log(x)
@@ -83,8 +80,15 @@ const Root = ({ }) => {
     }
     useEffect(() => {
         loadData({
-            onSuccess: () => {
+            onSuccess: ({ data, basket }) => {
                 setState(curr => ({ ...curr, loadData: false }));
+                dispatch(MarketActions.setMarketState({
+                    list: data
+                }));
+                dispatch(BasketActions.setBasketState({
+                    count: basket
+                }));
+
             }
         });
         loadColorScheme({
@@ -93,6 +97,7 @@ const Root = ({ }) => {
             }
         });
     }, [])
+
     if (state.loadData || state.appColorSchemeLoading || !fontsLoaded) {
         return (
             <>
